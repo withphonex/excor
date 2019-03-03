@@ -1,4 +1,4 @@
-import User from '../models/user';
+import User from "../models/user";
 
 /**
  * Create a user
@@ -7,11 +7,9 @@ import User from '../models/user';
  */
 const create = async (req, res) => {
   // Requires these fields in the body of the request
-  const { firstName, lastName, email } = req.body;
-
   try {
-    const user = await User.create({ firstName, lastName, email });
-
+    const user = await User.create(req.body);
+    console.log(user);
     res.send({ success: true, data: user });
   } catch (error) {
     res.send({ success: false, error });
@@ -33,42 +31,21 @@ const read = async (req, res) => {
   }
 };
 
-/**
- * Update a user
- * @param {*} req
- * @param {*} res
- */
-const update = async (req, res) => {
-  const { id } = req.params;
-  const { firstName, lastName } = req.body;
-
-  // Info to be updated
-  const info = { firstName, lastName };
-
+const sendTransaction = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(id, info, { new: true });
+    const {phoneNumber} = req.params;
+    const {amount, from} = req.body;
 
-    res.send({ success: true, data: user });
-  } catch (error) {
-    res.send({ success: false, error });
+    const user = await User.findOneAndUpdate({phoneNumber}, {"$push": {"transactions": {amount, from}}}, {new: true});
+    // let {balance} = user;
+    // balance = balance - amount;
+    // user.update({balance}, {new: true})
+
+    res.send({success: true, data: user})
+  } catch (e) {
+    console.log(e);
+    res.send({ success: false, e });
   }
 };
 
-/**
- * Remove a user
- * @param {*} req
- * @param {*} res
- */
-const remove = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    await User.findOneAndDelete(id);
-
-    res.send({ success: true });
-  } catch (error) {
-    res.send({ success: false, error });
-  }
-};
-
-export default { create, read, update, remove };
+export default { create, read, sendTransaction };

@@ -1,6 +1,8 @@
 import './env';
 import './db';
+import './services/twilio.js';
 
+import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
 import helmet from 'helmet';
@@ -20,4 +22,4 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', router);
 
-app.listen(PORT, console.log(`> Listening on ${PORT}`));
+http.createServer(app).listen(PORT, console.log(`> Listening on ${PORT}`));
