@@ -16,6 +16,10 @@ router.post('/receive-message', (req, res) => {
 /* Example user routes */
 router.post('/user', user.create);
 router.get('/user', user.read);
+router.get('/user/:phone', user.read);
 router.post('/user/:phoneNumber/send', user.sendTransaction);
+
+router.post('/user/:phone/transfer', user.transferFunds)
+router.post('/user/:phone/spend', user.expense)
  
 export { router };

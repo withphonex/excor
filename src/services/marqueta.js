@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const { MARQUETA_URL: baseURL, MARQUETA_APP_ID: username, MARQUETA_ACCESS_TOKEN: password } = process.env;
+const { MARQUETA_URL: baseURL, MARQUETA_APP_ID: username, MARQUETA_ACCESS_TOKEN: password, MARQUETA_FUNDING_SOURCE_TOKEN: funding} = process.env;
 const api = axios.create({
   baseURL,
   timeout: 150000,
@@ -10,8 +10,7 @@ const api = axios.create({
 
 
 
-const getCards = user => api.get(`/cards/user/${user}`);
-const getBalanace = user => api.get(`/balances/${user}`);
+const getCards = token => api.get(`/transactions/fundingsource/${token}`);
 
 export function fund({amount, user_token, memo}){
   return api.post('/gpaorders', {
@@ -32,13 +31,15 @@ export async function getUser({token}){
     const batch = await Promise.all([
       api.get(`/users/${token}`),
       api.get(`/cards/user/${token}`, { start_index: 1, fields: 'token,card_product_token,last_four,pan,expiration,state' }),
-      api.get(`/balances/${token}`)
+      api.get(`/balances/${token}`),
+      api.get(`/transactions/fundingsource/${funding}`)
     ]);
 
-    const [user, cards, balance] = batch.map(res => res.data);
+    const [user, cards, balance, transactions] = batch.map(res => res.data);
     return Object.assign({}, user, balance, {
-      cards: cards.data.filter(card => card.state === 'ACTIVE')
-    })
+      cards: cards.data.filter(card => card.state === 'ACTIVE'),
+      history: transactions.data.filter(action => action.user_token === token)
+    });
   } catch(err) {
     console.log(err);
   }

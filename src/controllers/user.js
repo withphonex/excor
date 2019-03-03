@@ -1,5 +1,5 @@
 import User from "../models/user";
-import { getUser } from '../services/marqueta';
+import { getUser, fund, purchase } from '../services/marqueta';
 
 /**
  * Create a user
@@ -13,7 +13,7 @@ const create = async (req, res) => {
     console.log(user);
     res.send({ success: true, data: user });
   } catch (error) {
-    res.send({ success: false, error });
+    res.send({ success: false, err:error.data });
   }
 };
 
@@ -28,13 +28,45 @@ const read = async (req, res) => {
 
     const carlos = await getUser({ token: '7868322852' });
 
-    console.log(carlos)
+    console.log(users)
     res.send({ success: true, data: carlos });
   } catch (error) {
     console.log(error)
     res.send({ success: false, error });
   }
 };
+
+
+const transferFunds = async (req, res) => {
+  try {
+    const { phone: user_token } = req.params;
+    const { amount } = req.body;
+    const {data} = await fund({ amount, user_token: '7868322852' });
+
+    res.send({ success: true, data});
+  } catch (error) {
+    console.log(error)
+    res.send({ success: false, err: error.data });
+  }
+}
+
+const expense = async (req, res) => {
+  try {
+    const { phone: token } = req.params;
+    const {amount} = req.body;
+
+    const user = await getUser({ token });
+    const {data: { transaction }} = await purchase({ amount, card_token: user.cards[0].token}); //'d939280d-1a01-4e2b-8b73-41ba15d86803'
+
+    res.send({ success: true, transaction });
+  } catch (error) {
+    console.log(error)
+    res.send({ success: false, err: error.data });
+  }
+}
+
+
+
 
 const sendTransaction = async (req, res) => {
   try {
@@ -53,4 +85,4 @@ const sendTransaction = async (req, res) => {
   }
 };
 
-export default { create, read, sendTransaction };
+export default { create, read, transferFunds, expense, sendTransaction };
