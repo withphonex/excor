@@ -10,7 +10,10 @@ router.post('/receive-message', twilio.receiveWebhook);
 
 /* User routes */
 router.post('/user', user.create);
-router.get('/user/:phoneNumber', user.read);
-router.post('/user/:phoneNumber/send', user.sendTransaction);
+router.get('/user/:phone', user.read);
+router.post('/user/:phone/send', user.transferFunds);
+
+router.post('/user/:phone/transfer', user.transferFunds)
+router.post('/user/:phone/spend', user.expense)
  
 export { router };
