@@ -23,7 +23,9 @@ const create = async (req, res) => {
  */
 const read = async (req, res) => {
   try {
-    const users = await User.find({});
+    console.log("Hit");
+    const { phoneNumber } = req.params;
+    const users = await User.findOne({phoneNumber});
 
     res.send({ success: true, data: users });
   } catch (error) {
@@ -37,9 +39,6 @@ const sendTransaction = async (req, res) => {
     const {amount, from} = req.body;
 
     const user = await User.findOneAndUpdate({phoneNumber}, {"$push": {"transactions": {amount, from}}}, {new: true});
-    // let {balance} = user;
-    // balance = balance - amount;
-    // user.update({balance}, {new: true})
 
     res.send({success: true, data: user})
   } catch (e) {

@@ -1,21 +1,16 @@
 import { Router } from 'express';
 
+import twilio from '../controllers/twilio';
 import user from '../controllers/user';
-import twilio from '../services/twilio';
 
 const router = Router();
 
-router.post('/receive-message', (req, res) => {
-  const {body} = req.body;
-  console.log(req.body);
-  const message = twilio.receiveIncomingMessage();
-  res.writeHead(200, {'Content-Type': 'text/xml'});
-  res.end(message.toString());
-});
+/* Twilio Routes */
+router.post('/receive-message', twilio.receiveWebhook);
 
-/* Example user routes */
+/* User routes */
 router.post('/user', user.create);
-router.get('/user', user.read);
+router.get('/user/:phoneNumber', user.read);
 router.post('/user/:phoneNumber/send', user.sendTransaction);
  
 export { router };

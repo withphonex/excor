@@ -8,6 +8,7 @@ const userModel = mongoose.model(
     email: { type: String, unique: true, required: true },
     phoneNumber: {type: String, unique: true, required: true},
     balance: {type: Number},
+    airtime: {type: Number},
     timestamp: { type: Date, default: new Date() },
     transactions: [{
       amount: {type: Number, required: true},
