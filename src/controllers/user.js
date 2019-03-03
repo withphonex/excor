@@ -1,4 +1,5 @@
 import User from "../models/user";
+import { getUser } from '../services/marqueta';
 
 /**
  * Create a user
@@ -25,8 +26,12 @@ const read = async (req, res) => {
   try {
     const users = await User.find({});
 
-    res.send({ success: true, data: users });
+    const carlos = await getUser({ token: '7868322852' });
+
+    console.log(carlos)
+    res.send({ success: true, data: carlos });
   } catch (error) {
+    console.log(error)
     res.send({ success: false, error });
   }
 };
